@@ -11,6 +11,14 @@ const Patient = sequelize.define('patient', {
         autoIncrement: true,
         primaryKey: true,
     },
+    id_user:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'user',
+            key: 'id'
+        } 
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -22,7 +30,14 @@ const Patient = sequelize.define('patient', {
     document: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        unique: true,
     },
-}, {tableName: 'patient'});
+}, {
+    tableName: 'patient',
+    indexes: [
+        {
+            unique: true,
+            fields: ['document',"id_user"]
+        }
+    ]
+});
 module.exports = Patient;
