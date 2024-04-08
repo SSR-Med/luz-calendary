@@ -29,6 +29,12 @@ const user = {
     password: "user",
     role:false
 }
+const realUser = {
+    name: "sasaravi",
+    email: "sasaraviji@gmail.com",
+    password: "sasaravi",
+    role: false
+}
 
 const incorrectAdmin2 = {...admin2}
 delete incorrectAdmin2.name;
@@ -40,5 +46,6 @@ module.exports =
     incorrectAdmin2,
     admin3,
     admin4,
-    user
+    user,
+    realUser
 }

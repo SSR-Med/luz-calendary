@@ -5,7 +5,9 @@ const User = require('../../models/User')
 // Helpers
 const { generatePassword, comparePassword } = require('../../helpers/user/Password')
 // Env
-const { jwt_key } = require("../../config/Config");
+const { jwt_key, port, email_host } = require("../../config/Config");
+// Modules
+const transportMail = require("../../config/Email");
 
 // Get all users
 async function getUsers() {
@@ -75,10 +77,63 @@ async function login(name, password) {
   }
 }
 
+// Get link for password recovery
+async function sendLink(email) {
+  const user = await User.findOne({where: {email: email}});
+  if (!user) {
+    return null;
+  }
+  const token = jwt.sign({ id: user.id }, jwt_key, { expiresIn: "15m" });
+  return `http://localhost:${port}/user/password_recovery/${user.id}/${token}`;
+}
+
+// Send link to email
+async function sendEmail(link, email) {
+  const emailInfo = await transportMail.sendMail({
+    from: email_host,
+    to: email,
+    subject: "Password Recovery",
+    html: `
+    <p>I hope this email finds you well. We noticed that you've encountered some difficulty accessing your account, and we're here to help. Your security is our utmost priority, and we understand the importance of regaining access to your account promptly.</p>
+    <p>Our automated password recovery system has detected a request for assistance regarding your account. To proceed with the recovery process and ensure the security of your information, please follow the instructions outlined below:</p>
+    <ol>
+      <li>Click on the following link to initiate the password recovery process: <a href=${link}>Click here to recover your password</a></li>
+      <li>Follow the on-screen instructions carefully to reset your password securely.</li>
+    </ol>
+    `
+  })
+}
+
+// Recover password
+async function recoverPassword(id, token, password) {
+  try{
+    const payload = jwt.verify(token, jwt_key);
+    const userId = payload.id;
+    if (userId != id) {
+      return null;
+    }
+    const userDB = await User.findOne({where: {id: id}});
+    if (!userDB) {
+      return null;
+    }
+    userDB.update({
+      password: generatePassword(password)
+    });
+    return userDB;
+  }
+  catch{
+    return null;
+  }
+  
+}
+
 module.exports = {
     getUsers,
     deleteUser,
     createUser,
     modifyUser,
-    login
+    login,
+    sendLink,
+    sendEmail,
+    recoverPassword
 };

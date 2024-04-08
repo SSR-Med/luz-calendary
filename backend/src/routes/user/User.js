@@ -1,7 +1,7 @@
 // Dependencies
 const express = require('express')
 // Services
-const { getUsers,deleteUser,createUser,modifyUser } = require('../../services/user/UserService')
+const { getUsers,deleteUser,createUser,modifyUser, sendLink, sendEmail, recoverPassword } = require('../../services/user/UserService')
 // Modules
 const {sequelize} = require('../../config/Database')
 // Helpers
@@ -73,6 +73,35 @@ router.post('/admin', verifyToken, checkAdmin,checkRequiredParams(userCompletePa
             return res.status(409).json({ message: 'User already exists' });
         }
         return res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'})
+    }
+})
+// Post /user/password_recovery: Send an email to recover the password
+router.post('/password_recovery', async (req, res) => {
+    try{
+        // Get link
+        const link = await sendLink(req.body.email)
+        if (!link) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Send email
+        await sendEmail(link,req.body.email)
+        return res.status(200).json({ message: 'Email sent successfully' });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: 'Internal server error'})
+    }
+})
+// Post /user/password_recovery/:id/:token : Assign another password
+router.post('/password_recovery/:id/:token', async (req, res) => {
+    try{
+        const response = await recoverPassword(req.params.id,req.params.token,req.body.password)
+        if (response) {
+            return res.status(200).json({ message: 'Password updated successfully' });
+        } else {
+            return res.status(404).json({ message: 'User not found' });
+        }
     } catch (error) {
         res.status(500).json({message: 'Internal server error'})
     }
