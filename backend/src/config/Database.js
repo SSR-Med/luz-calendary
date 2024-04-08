@@ -6,6 +6,7 @@ const {  host, database_url } = require('./Config');
 const sequelize = new Sequelize(database_url, {
   host: host,
   dialect: 'postgres',
+  logging: false
 });
 
 module.exports = {

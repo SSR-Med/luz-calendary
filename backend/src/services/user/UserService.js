@@ -63,6 +63,9 @@ async function modifyUser(id,newName,newEmail,newPassword,newRole) {
 // User Login
 async function login(name, password) {
   const user = await User.findOne({where: {name: name}});
+  if (!user) {
+    return null;
+  }
   const id = user.id;
   if (user && comparePassword(password, user.password)) {
     const token = jwt.sign({ id }, jwt_key, { expiresIn: "24h" });

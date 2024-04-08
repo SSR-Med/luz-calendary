@@ -4,13 +4,15 @@ const express = require('express')
 const {sequelize} = require('../../config/Database')
 // Services
 const { login } = require('../../services/user/UserService')
+// Helpers
+const checkRequiredParams = require('../../helpers/CheckRequiredParams')
 
 const router = express.Router()
 router.use(express.json())
 
 // Routes
 // POST /login : Login
-router.post('/', async (req, res) => {
+router.post('/',checkRequiredParams(["name","password"]), async (req, res) => {
     try{
         const token = await login(req.body.name, req.body.password)
         if (token) {
