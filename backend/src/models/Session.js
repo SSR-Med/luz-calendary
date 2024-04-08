@@ -2,10 +2,8 @@
 const { DataTypes } = require('sequelize');
 // Modules
 const { sequelize } = require('../config/Database');
-// Models
-import Patient from './Patient';
 
-const Session = sequelize.define('Session', {
+const Session = sequelize.define('session', {
     id_session: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -16,9 +14,17 @@ const Session = sequelize.define('Session', {
         allowNull: false,
         primaryKey: true,
         references: {
-            model: Patient,
+            model: 'patient',
             key: 'id'
         }
+    },
+    id_user:{
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'user',
+            key: 'id'
+        } 
     },
     date: {
         type: DataTypes.DATE,
@@ -36,6 +42,6 @@ const Session = sequelize.define('Session', {
         type: DataTypes.STRING,
         allowNull: false,
     },
-});
+}, {tableName: 'session'});
 
 module.exports = Session;

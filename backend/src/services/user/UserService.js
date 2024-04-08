@@ -25,7 +25,7 @@ async function deleteUser(id) {
 }
 // Create user
 async function createUser(name,email,password,role = false) {
-  const searchUser = await User.findOne({where: {nombre: username}});
+  const searchUser = await User.findOne({where: {name: name}});
   if (searchUser) {
     return null;
   }
@@ -35,7 +35,7 @@ async function createUser(name,email,password,role = false) {
     password: generatePassword(password),
     role: role
   });
-  newUser.save();
+  await newUser.save();
   return newUser;
 }
 // Modify user
@@ -43,10 +43,10 @@ async function modifyUser(id,newName,newEmail,newPassword,newRole) {
   const searchUserName = await User.findOne({where: {name: newName}});
   const searchUserEmail = await User.findOne({where: {email: newEmail}});
   if (searchUserName && searchUserName.id != id) {
-    return null;
+    return false;
   }
   if (searchUserEmail && searchUserEmail.id != id) {
-    return null;
+    return false;
   }
   const user = await User.findOne({where: {id: id}});
   if (!user) {

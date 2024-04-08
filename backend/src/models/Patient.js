@@ -5,7 +5,7 @@ const { sequelize } = require('../config/Database');
 // Models
 const Session = require('./Session');
 
-const Patient = sequelize.define('Patient', {
+const Patient = sequelize.define('patient', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -24,7 +24,5 @@ const Patient = sequelize.define('Patient', {
         allowNull: false,
         unique: true,
     },
-});
-
-Patient.hasMany(Session, {onDelete: 'cascade'});
+}, {tableName: 'patient'});
 module.exports = Patient;

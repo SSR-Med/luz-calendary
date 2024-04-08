@@ -7,6 +7,8 @@ const {sequelize} = require('../../config/Database')
 // Helpers
 const { verifyToken } = require('../../helpers/user/Token')
 const { checkAdmin } = require('../../helpers/user/CheckAdmin')
+const checkRequiredParams = require('../../helpers/CheckRequiredParams')
+const { userCompleteParams } = require('../../helpers/user/UserParams')
 
 const router = express.Router()
 router.use(express.json())
@@ -35,20 +37,36 @@ router.delete('/id/:id', verifyToken, checkAdmin, async (req, res) => {
     }
 })
 // Put /user : Modify a user (Only admin)
-router.put('/id/:id', verifyToken, checkAdmin, async (req, res) => {
+router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams), async (req, res) => {
     try{
         const user = await modifyUser(req.params.id,req.body.name,req.body.email,req.body.password,req.body.role)
-        if (user) {
+        if (user && user != false) {
             return res.status(200).json({ message: 'User updated successfully' });
         } else {
+            if (user == false){
+                return res.status(409).json({ message: 'User already exists' });
+            }
             return res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
         res.status(500).json({message: 'Internal server error'})
     }
 })
-// POST /user : Register a new user
+// POST /user : Register a new user as an user
 router.post('/', async (req, res) => {
+    try{
+        const newUser = await createUser(req.body.name,req.body.email,req.body.password)
+        if (!newUser) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
+        return res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'})
+    }
+})
+
+// Post /user/admin : Register a new user as an admin (Only admin)
+router.post('/admin', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams), async (req, res) => {
     try{
         const newUser = await createUser(req.body.name,req.body.email,req.body.password,req.body.role)
         if (!newUser) {

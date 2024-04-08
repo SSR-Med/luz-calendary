@@ -19,7 +19,7 @@ app.use('/user', userRouter);
 app.use('/login', loginRouter);
 
 // Connection with db
-
+/*
 sequelize
   .authenticate()
   .then(() => {
@@ -35,4 +35,6 @@ sequelize
   .catch((error) => {
     console.error('Connection fail', error);
 });
+*/
+module.exports = app;
 

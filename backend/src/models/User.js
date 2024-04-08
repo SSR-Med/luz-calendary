@@ -3,7 +3,7 @@ const { DataTypes } = require('sequelize');
 // Modules
 const { sequelize } = require('../config/Database');
 
-const User = sequelize.define('User', {
+const User = sequelize.define('user', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -25,9 +25,9 @@ const User = sequelize.define('User', {
     },
     role: {
         type: DataTypes.BOOLEAN, // 0: admin, 1: superadmin
-        defaultValue: 0,
+        defaultValue: false,
         allowNull: false,
     }
-});
+}, {tableName: 'user'});
 
 module.exports = User;
