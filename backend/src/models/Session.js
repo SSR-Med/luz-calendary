@@ -18,14 +18,6 @@ const Session = sequelize.define('session', {
             key: 'id'
         }
     },
-    id_user:{
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'user',
-            key: 'id'
-        } 
-    },
     date: {
         type: DataTypes.DATE,
         allowNull: false,
