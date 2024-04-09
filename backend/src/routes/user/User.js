@@ -1,14 +1,17 @@
 // Dependencies
 const express = require('express')
 // Services
-const { getUsers,deleteUser,createUser,modifyUser, sendLink, sendEmail, recoverPassword } = require('../../services/user/UserService')
+const { getUsers,deleteUser,createUser,modifyUser, sendLink, sendEmailPasswordRecovery, recoverPassword, encryptUserData,
+    createLinkUserCreation,decryptUserData, sendEmailCreateAccount } = require('../../services/user/UserService')
 // Modules
 const {sequelize} = require('../../config/Database')
 // Helpers
 const { verifyToken } = require('../../helpers/user/Token')
 const { checkAdmin } = require('../../helpers/user/CheckAdmin')
 const checkRequiredParams = require('../../helpers/CheckRequiredParams')
-const { userCompleteParams } = require('../../helpers/user/UserParams')
+const { userCompleteParams, userNormalParams } = require('../../helpers/user/UserParams')
+// Models
+const User = require('../../models/User')
 
 const router = express.Router()
 router.use(express.json())
@@ -52,15 +55,41 @@ router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompletePa
         res.status(500).json({message: 'Internal server error'})
     }
 })
-// POST /user : Register a new user as an user
-router.post('/', async (req, res) => {
+// POST /user : Send email with link to confirm the creation of the account
+router.post('/',checkRequiredParams(userNormalParams), async (req, res) => {
     try{
-        const newUser = await createUser(req.body.name,req.body.email,req.body.password)
+        const searchUser = await User.findOne({where: {email: req.body.email}});
+        if (searchUser) {
+            return res.status(409).json({ message: 'User already exists' });
+        }
+        const userData = JSON.stringify({
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password
+        })
+        const userDataEncrypted = encryptUserData(userData)
+        await sendEmailCreateAccount(createLinkUserCreation(userDataEncrypted),req.body.email)
+        
+        return res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        res.status(500).json({message: 'Internal server error'})
+    }
+})
+
+// GET /user/creation/:encripted
+
+router.get('/creation/:encrypted', async (req, res) => {
+    try{
+        const encryptedUserData = req.params.encrypted
+        const decryptedUserData = JSON.parse(decryptUserData(encryptedUserData))
+        const {name,email,password} = decryptedUserData
+        const newUser = await createUser(name,email,password)
         if (!newUser) {
             return res.status(409).json({ message: 'User already exists' });
         }
         return res.status(201).json({ message: 'User created successfully' });
-    } catch (error) {
+    }
+    catch (error) {
         res.status(500).json({message: 'Internal server error'})
     }
 })
@@ -86,7 +115,7 @@ router.post('/password_recovery', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         // Send email
-        await sendEmail(link,req.body.email)
+        await sendEmailPasswordRecovery(link,req.body.email)
         return res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
         console.log(error)

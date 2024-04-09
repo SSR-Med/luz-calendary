@@ -1,11 +1,12 @@
 // Dependencies
 const jwt = require("jsonwebtoken");
+const crpyto = require("crypto");
 // Models
 const User = require('../../models/User')
 // Helpers
 const { generatePassword, comparePassword } = require('../../helpers/user/Password')
 // Env
-const { jwt_key, port, email_host } = require("../../config/Config");
+const { host, jwt_key, port, email_host, crypt_algorithm, crypt_secret_key } = require("../../config/Config");
 // Modules
 const transportMail = require("../../config/Email");
 
@@ -84,11 +85,11 @@ async function sendLink(email) {
     return null;
   }
   const token = jwt.sign({ id: user.id }, jwt_key, { expiresIn: "15m" });
-  return `http://localhost:${port}/user/password_recovery/${user.id}/${token}`;
+  return `${host}${port}/user/password_recovery/${user.id}/${token}`;
 }
 
-// Send link to email
-async function sendEmail(link, email) {
+// Send link to email for passwordRecovery
+async function sendEmailPasswordRecovery(link, email) {
   const emailInfo = await transportMail.sendMail({
     from: email_host,
     to: email,
@@ -127,6 +128,45 @@ async function recoverPassword(id, token, password) {
   
 }
 
+// Encrypt user data
+function encryptUserData(text) {
+  const cipher = crpyto.createCipher(crypt_algorithm, crypt_secret_key);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return encrypted;
+}
+
+// Decrypt user data
+function decryptUserData(text) {
+  const decipher = crpyto.createDecipher(crypt_algorithm, crypt_secret_key);
+  let decrypted = decipher.update(text, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
+}
+
+// Create link for user creation
+function createLinkUserCreation(encryptedText){
+  return `${host}${port}/user/creation/${encryptedText}`;
+
+}
+
+// Send email to create account
+async function sendEmailCreateAccount(link, email) {
+  const emailInfo = await transportMail.sendMail({
+    from: email_host,
+    to: email,
+    subject: "Account creation",
+    html: `
+    <p>We're thrilled to invite you to join our community! Creating an account with us opens up a world of possibilities and exclusive benefits.</p>
+    <p>To get started, simply click on the link below to create your account:</p>
+    <p><a href=${link}>Create Account</a></p>
+    <p>You'll stay updated on the latest news, offers, and exciting developments.</p>
+    <p>We can't wait to see you onboard!</p>
+    `
+  })
+}
+
+
 module.exports = {
     getUsers,
     deleteUser,
@@ -134,6 +174,10 @@ module.exports = {
     modifyUser,
     login,
     sendLink,
-    sendEmail,
-    recoverPassword
+    sendEmailPasswordRecovery,
+    recoverPassword,
+    encryptUserData,
+    decryptUserData,
+    createLinkUserCreation,
+    sendEmailCreateAccount
 };

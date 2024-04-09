@@ -2,8 +2,8 @@
 const request = require('supertest');
 // Modules
 const app = require('../../app');
-const {user,admin} = require('../../helpers/user/UserTestValues'); 
-const generateTokenTesting = require('../../helpers/TokenGenerationTesting');
+const {user,admin} = require('../../helpers/testing/UserTestValues'); 
+const generateTokenTesting = require('../../helpers/testing/TokenGenerationTesting');
 
 beforeEach(async () =>{
     const {name, email, password, role} = admin;

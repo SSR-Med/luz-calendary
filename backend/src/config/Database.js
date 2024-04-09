@@ -1,10 +1,10 @@
 // Dependencies
 const { Sequelize } = require('sequelize');
 // Env
-const {  host, database_url } = require('./Config');
+const {  database_host, database_url } = require('./Config');
 
 const sequelize = new Sequelize(database_url, {
-  host: host,
+  host: database_host,
   dialect: 'postgres',
   logging: false
 });

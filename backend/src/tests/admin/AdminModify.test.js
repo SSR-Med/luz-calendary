@@ -2,8 +2,8 @@
 const request = require('supertest');
 // Modules
 const app = require('../../app');
-const generateTokenTesting = require('../../helpers/TokenGenerationTesting');
-const {admin,admin2,admin3,admin4,incorrectAdmin2, user} = require('../../helpers/user/UserTestValues'); 
+const generateTokenTesting = require('../../helpers/testing/TokenGenerationTesting');
+const {admin,admin2,admin3,admin4,incorrectAdmin2, user} = require('../../helpers/testing/UserTestValues'); 
 // Services
 const {createUser} = require('../../services/user/UserService');
 
