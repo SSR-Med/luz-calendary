@@ -7,12 +7,12 @@ const Session = require('./Session');
 
 const Patient = sequelize.define('patient', {
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
     },
     id_user:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false,
         references: {
             model: 'user',
@@ -24,11 +24,11 @@ const Patient = sequelize.define('patient', {
         allowNull: false,
     },
     cellphone: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: true,
     },
     document: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false,
     },
 }, {

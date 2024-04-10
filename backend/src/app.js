@@ -13,10 +13,12 @@ require('./models/Patient');
 // Routes
 const userRouter = require('./routes/user/User');
 const loginRouter = require('./routes/user/Login');
+const patientRouter = require('./routes/patient/Patient');
 
 app.use(express.json());
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
+app.use('/patient', patientRouter);
 
 // Connection with db
 /*

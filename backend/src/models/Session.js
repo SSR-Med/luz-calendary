@@ -5,12 +5,12 @@ const { sequelize } = require('../config/Database');
 
 const Session = sequelize.define('session', {
     id_session: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         autoIncrement: true,
         primaryKey: true,
     },
     id_patient:{
-        type: DataTypes.INTEGER,
+        type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         references: {
