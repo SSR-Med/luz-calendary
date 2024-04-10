@@ -43,7 +43,7 @@ router.delete('/id/:id', verifyToken, checkAdmin, async (req, res) => {
 router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams), async (req, res) => {
     try{
         const user = await modifyUser(req.params.id,req.body.name,req.body.email,req.body.password,req.body.role)
-        if (user && user != false) {
+        if (user) {
             return res.status(200).json({ message: 'User updated successfully' });
         } else {
             if (user == false){

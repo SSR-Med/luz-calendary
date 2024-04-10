@@ -1,15 +1,15 @@
 // Dependencies
 const request = require('supertest');
 // Modules
-const app = require('../../../app');
+const app = require('../../app');
 // Models
-const Patient = require('../../../models/Patient');
+const Patient = require('../../models/Patient');
 // Helpers
-const generateTokenTesting = require('../../../helpers/testing/TokenGenerationTesting');
-const {user} = require('../../../helpers/testing/UserTestValues'); 
+const generateTokenTesting = require('../../helpers/testing/TokenGenerationTesting');
+const {user} = require('../../helpers/testing/UserTestValues'); 
+const {patient1} = require('../../helpers/testing/PatientTestValue');
 // Services
-const {createPatient} = require('../../../services/patient/PatientService');
-const {createUser} = require('../../../services/user/UserService');
+const {createPatient} = require('../../services/patient/PatientService');
 
 beforeEach(async () => {
     await Patient.sync({force:true});
@@ -20,7 +20,8 @@ beforeEach(async () => {
 describe("GET /patient", () =>{
 
     test("Should return all patients", async() =>{
-        const patient = await createPatient(1, 'John Doe', '123456789', '12345678901');
+        const {id_user, name, cellphone, document} = patient1;
+        const patient = await createPatient(id_user, name, cellphone, document);
         return request(app)
             .get('/patient')
             .auth(token, {type: 'bearer'})

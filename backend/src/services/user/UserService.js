@@ -1,6 +1,7 @@
 // Dependencies
 const jwt = require("jsonwebtoken");
 const crpyto = require("crypto");
+const { Op } = require("sequelize");
 // Models
 const User = require('../../models/User')
 // Helpers
@@ -43,12 +44,12 @@ async function createUser(name,email,password,role = false) {
 }
 // Modify user
 async function modifyUser(id,newName,newEmail,newPassword,newRole) {
-  const searchUserName = await User.findOne({where: {name: newName}});
-  const searchUserEmail = await User.findOne({where: {email: newEmail}});
-  if (searchUserName && searchUserName.id != id) {
+  const searchUserName = await User.findOne({where: {name: newName, id: {[Op.not]: id}}});
+  const searchUserEmail = await User.findOne({where: {email: newEmail, id: {[Op.not]: id}}});
+  if (searchUserName) {
     return false;
   }
-  if (searchUserEmail && searchUserEmail.id != id) {
+  if (searchUserEmail) {
     return false;
   }
   const user = await User.findOne({where: {id: id}});

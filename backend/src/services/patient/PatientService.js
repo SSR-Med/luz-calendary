@@ -2,6 +2,8 @@
 const Patient = require('../../models/Patient');
 // Helpers
 const checkRole= require('../../helpers/patient/CheckRole');
+// Dependencies
+const { Op } = require("sequelize");
 
 // Get all patients
 async function getPatients(userId) {
@@ -65,11 +67,21 @@ async function createPatient(userId, name, cellphone, document, id_user=userId) 
 // Modify patient
 async function modifyPatient(userId, patientId, 
     name, cellphone, document,id_user=userId) {
+    const searchPatient = await Patient.findOne({where: {id_user: id_user, document:document, id: {[Op.not]: patientId}}});
+    if (searchPatient){
+        return false;
+    }
+    let patient;
     const isAdmin = await checkRole(userId);
     if(isAdmin === null){
         return null;
     }
-    const patient = await Patient.findOne({where: {id: patientId}});
+    if (isAdmin){
+        patient = await Patient.findOne({where: {id: patientId}});
+    }
+    else{
+        patient = await Patient.findOne({where: {id: patientId, id_user: userId}});
+    }
     if(!patient){
         return null;
     }
@@ -81,7 +93,7 @@ async function modifyPatient(userId, patientId,
     if(isAdmin){
         patientDataModify.id_user = id_user;
     }
-    await patient.update(data);
+    await patient.update(patientDataModify);
     return patient;
 }
 
