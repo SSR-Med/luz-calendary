@@ -31,8 +31,9 @@ const Session = sequelize.define('session', {
         allowNull: false,
     },  
     status: {
-        type: DataTypes.STRING,
+        type: DataTypes.BOOLEAN,
         allowNull: false,
+        defaultValue: false
     },
 }, {tableName: 'session'});
 
