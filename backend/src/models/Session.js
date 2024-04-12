@@ -21,6 +21,7 @@ const Session = sequelize.define('session', {
     date: {
         type: DataTypes.DATE,
         allowNull: false,
+        primaryKey: true
     },
     start_hour: {
         type: DataTypes.TIME,

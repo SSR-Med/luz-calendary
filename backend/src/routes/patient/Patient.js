@@ -59,7 +59,7 @@ router.delete('/:id',verifyToken, async (req, res) => {
 })
 
 // Post /patient : Create a patient
-router.post('/',verifyToken,checkRequiredParams(patientParams), async (req, res) => {
+router.post('/',verifyToken,checkRequiredParams(patientParams,"body"), async (req, res) => {
     try{
         let id_user = req.id;
         if (checkRole(req.id) == true){
@@ -79,7 +79,7 @@ router.post('/',verifyToken,checkRequiredParams(patientParams), async (req, res)
 })
 
 // Put /patient/:id : Modify a patient
-router.put('/:id',verifyToken,checkRequiredParams(patientParams), async (req, res) => {
+router.put('/:id',verifyToken,checkRequiredParams(patientParams,"body"), async (req, res) => {
     try{
         let patient;
         if (checkRole(req.id) == true){

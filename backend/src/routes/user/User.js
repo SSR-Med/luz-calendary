@@ -40,7 +40,7 @@ router.delete('/id/:id', verifyToken, checkAdmin, async (req, res) => {
     }
 })
 // Put /user : Modify a user (Only admin)
-router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams), async (req, res) => {
+router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams,"body"), async (req, res) => {
     try{
         const user = await modifyUser(req.params.id,req.body.name,req.body.email,req.body.password,req.body.role)
         if (user) {
@@ -56,7 +56,7 @@ router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompletePa
     }
 })
 // POST /user : Send email with link to confirm the creation of the account
-router.post('/',checkRequiredParams(userNormalParams), async (req, res) => {
+router.post('/',checkRequiredParams(userNormalParams,"body"), async (req, res) => {
     try{
         const searchUser = await User.findOne({where: {email: req.body.email}});
         if (searchUser) {
@@ -95,7 +95,7 @@ router.get('/creation/:encrypted', async (req, res) => {
 })
 
 // Post /user/admin : Register a new user as an admin (Only admin)
-router.post('/admin', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams), async (req, res) => {
+router.post('/admin', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams,"body"), async (req, res) => {
     try{
         const newUser = await createUser(req.body.name,req.body.email,req.body.password,req.body.role)
         if (!newUser) {
