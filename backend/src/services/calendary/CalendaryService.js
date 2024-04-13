@@ -93,7 +93,8 @@ async function createSession(userId,patientId,startDate,finishDate,schedule){
     if(new Date(startDate) > new Date(finishDate)) return "Invalid date";
     const searchPatient = await Patient.findOne({
         where: {
-            id_user: userId
+            id_user: userId,
+            id: patientId
         }
     })
     if(!searchPatient) return "Patient not found";
@@ -110,7 +111,8 @@ async function modifySession(userId,patientId,startDate,finishDate,schedule){
     if(new Date(startDate) > new Date(finishDate)) return "Invalid date";
     const searchPatient = await Patient.findOne({
         where: {
-            id_user: userId
+            id_user: userId,
+            id: patientId
         }
     })
     if(!searchPatient) return "Patient not found";;
@@ -120,16 +122,16 @@ async function modifySession(userId,patientId,startDate,finishDate,schedule){
             {
                 model: Patient,
                 where: {
-                    id_user: userId
+                    id_user: userId,
+                    id: patientId
                 }
             }
         ],
         where: {
             date: {
-                [Op.gte]: intervalDate.beforeDate,
-                [Op.lte]: intervalDate.afterDate
-            },
-            id_patient: patientId
+                [Op.gte]: startDate,
+                [Op.lte]: finishDate
+            }
         }
     });
     // Get the schedule dictionary with the dates for the sessions
@@ -145,7 +147,8 @@ async function deleteMultipleSession(userId,patientId,startDate,finishDate){
     if(new Date(startDate) > new Date(finishDate)) return null;
     const searchPatient = await Patient.findOne({
         where: {
-            id_user: userId
+            id_user: userId,
+            id: patientId
         }
     })
     if(!searchPatient) return "Patient not found";
@@ -154,7 +157,8 @@ async function deleteMultipleSession(userId,patientId,startDate,finishDate){
             {
                 model: Patient,
                 where: {
-                    id_user: userId
+                    id_user: userId,
+                    id: patientId
                 }
             }
         ],
@@ -162,8 +166,7 @@ async function deleteMultipleSession(userId,patientId,startDate,finishDate){
             date: {
                 [Op.gte]: startDate,
                 [Op.lte]: finishDate
-            },
-            id_patient: patientId
+            }
         }
     });
     return "Sessions deleted";

@@ -68,11 +68,17 @@ function getDaysBetweenDates(startDate,finishDate,dayName){
     // Go to the x day of the week
     current.setDate(current.getDate() + (day - current.getDay() + 7) % 7);
     // Iterate over the days
+    finishDate.setDate(finishDate.getDate() + 1)
     while(current <= finishDate){
         result.push(new Date(current));
         current.setDate(current.getDate() + 7);
     }
     return result
+}
+
+function isValidTime(timeString){
+    const timeRegex = /^([0-1][0-9]|2[0-3]):([0-5][0-9])$/;
+    return timeRegex.test(timeString);
 }
 
 function getDatesBetweenInterval(startDate,finishDate,schedule){
@@ -87,6 +93,9 @@ function getDatesBetweenInterval(startDate,finishDate,schedule){
         resultScheduleCalendar[scheduleCalendarKeys[i]]["end_hour"] = schedule[scheduleCalendarKeys[i]]["end_hour"];
         const sessionWeekDay = getDaysBetweenDates(actualDate,endDate,scheduleCalendarKeys[i])
         if (sessionWeekDay.length === 0) return null;
+        if (schedule[scheduleCalendarKeys[i]]["start_hour"] >= schedule[scheduleCalendarKeys[i]]["end_hour"]) return null;
+        if (schedule[scheduleCalendarKeys[i]]["start_hour"] === undefined || schedule[scheduleCalendarKeys[i]]["end_hour"] === undefined) return null;
+        if (!isValidTime(schedule[scheduleCalendarKeys[i]]["start_hour"]) || !isValidTime(schedule[scheduleCalendarKeys[i]]["end_hour"])) return null
         resultScheduleCalendar[scheduleCalendarKeys[i]]["dates"] = sessionWeekDay;
     }
     return resultScheduleCalendar

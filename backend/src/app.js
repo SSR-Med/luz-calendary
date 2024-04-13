@@ -8,8 +8,10 @@ const app = express();
 const { sequelize } = require('./config/Database');
 // Models
 require('./models/User');
-require('./models/Session');
 require('./models/Patient');
+require('./models/Session');
+require('./models/Associations')
+
 // Routes
 const userRouter = require('./routes/user/User');
 const loginRouter = require('./routes/user/Login');
