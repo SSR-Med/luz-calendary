@@ -1,5 +1,6 @@
 // Dependencies
 const express = require('express');
+let cors = require('cors');
 // Env
 const { port } = require('./config/Config')
 // App
@@ -18,6 +19,7 @@ const loginRouter = require('./routes/user/Login');
 const patientRouter = require('./routes/patient/Patient');
 const sessionRouter = require('./routes/session/Session');
 
+app.use(cors());
 app.use(express.json());
 app.use('/user', userRouter);
 app.use('/login', loginRouter);
@@ -25,15 +27,12 @@ app.use('/patient', patientRouter);
 app.use('/session', sessionRouter);
 
 // Connection with db
-/*
 sequelize
   .authenticate()
   .then(() => {
-    console.log('Connection success');
     return sequelize.sync();
   })
   .then(() => {
-    console.log('Sync models');
     app.listen(port, () => {
       console.log(`Server listen on http://localhost:${port}`);
     });
@@ -41,6 +40,5 @@ sequelize
   .catch((error) => {
     console.error('Connection fail', error);
 });
-*/
 module.exports = app;
 

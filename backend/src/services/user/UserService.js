@@ -7,9 +7,11 @@ const User = require('../../models/User')
 // Helpers
 const { generatePassword, comparePassword } = require('../../helpers/user/Password')
 // Env
-const { host, jwt_key, port, email_host, crypt_algorithm, crypt_secret_key } = require("../../config/Config");
+const { host, jwt_key, email_host, crypt_algorithm, crypt_secret_key } = require("../../config/Config");
 // Modules
 const transportMail = require("../../config/Email");
+
+const emailRegex = /^[A-Z0-9]+@[A-Z0-9.-]+\.com$/i;
 
 // Get all users
 async function getUsers() {
@@ -29,8 +31,15 @@ async function deleteUser(id) {
 }
 // Create user
 async function createUser(name,email,password,role = false) {
-  const searchUser = await User.findOne({where: {name: name}});
-  if (searchUser) {
+  const searchUserName = await User.findOne({where: {name: name}});
+  const searchUserEmail = await User.findOne({where: {email: email}});
+  if (searchUserName) {
+    return null;
+  }
+  if (searchUserEmail) {
+    return null;
+  }
+  if (!emailRegex.test(email)) {
     return null;
   }
   const newUser = new User({
@@ -50,6 +59,9 @@ async function modifyUser(id,newName,newEmail,newPassword,newRole) {
     return false;
   }
   if (searchUserEmail) {
+    return false;
+  }
+  if (!emailRegex.test(newEmail)) {
     return false;
   }
   const user = await User.findOne({where: {id: id}});
@@ -86,7 +98,7 @@ async function sendLink(email) {
     return null;
   }
   const token = jwt.sign({ id: user.id }, jwt_key, { expiresIn: "15m" });
-  return `${host}${port}/user/password_recovery/${user.id}/${token}`;
+  return `${host}/user/password_recovery/${user.id}/${token}`;
 }
 
 // Send link to email for passwordRecovery
@@ -147,7 +159,7 @@ function decryptUserData(text) {
 
 // Create link for user creation
 function createLinkUserCreation(encryptedText){
-  return `${host}${port}/user/creation/${encryptedText}`;
+  return `${host}/user/creation/${encryptedText}`;
 
 }
 
