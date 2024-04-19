@@ -7,7 +7,7 @@ const User = require('../../models/User')
 // Helpers
 const { generatePassword, comparePassword } = require('../../helpers/user/Password')
 // Env
-const { host, jwt_key, email_host, crypt_algorithm, crypt_secret_key } = require("../../config/Config");
+const { front_host,host, jwt_key, email_host, crypt_algorithm, crypt_secret_key } = require("../../config/Config");
 // Modules
 const transportMail = require("../../config/Email");
 
@@ -33,13 +33,7 @@ async function deleteUser(id) {
 async function createUser(name,email,password,role = false) {
   const searchUserName = await User.findOne({where: {name: name}});
   const searchUserEmail = await User.findOne({where: {email: email}});
-  if (searchUserName) {
-    return null;
-  }
-  if (searchUserEmail) {
-    return null;
-  }
-  if (!emailRegex.test(email)) {
+  if (searchUserName || searchUserEmail || !emailRegex.test(email)) { 
     return null;
   }
   const newUser = new User({
@@ -55,13 +49,7 @@ async function createUser(name,email,password,role = false) {
 async function modifyUser(id,newName,newEmail,newPassword,newRole) {
   const searchUserName = await User.findOne({where: {name: newName, id: {[Op.not]: id}}});
   const searchUserEmail = await User.findOne({where: {email: newEmail, id: {[Op.not]: id}}});
-  if (searchUserName) {
-    return false;
-  }
-  if (searchUserEmail) {
-    return false;
-  }
-  if (!emailRegex.test(newEmail)) {
+  if (searchUserName || searchUserEmail || !emailRegex.test(newEmail)) {
     return false;
   }
   const user = await User.findOne({where: {id: id}});
@@ -94,11 +82,11 @@ async function login(name, password) {
 // Get link for password recovery
 async function sendLink(email) {
   const user = await User.findOne({where: {email: email}});
-  if (!user) {
+  if (!user || !emailRegex.test(email)) {
     return null;
   }
   const token = jwt.sign({ id: user.id }, jwt_key, { expiresIn: "15m" });
-  return `${host}/user/password_recovery/${user.id}/${token}`;
+  return `${front_host}/modify-forgotten-password/${user.id}/${token}`;
 }
 
 // Send link to email for passwordRecovery
