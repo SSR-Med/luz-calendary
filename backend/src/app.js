@@ -18,6 +18,7 @@ const userRouter = require('./routes/user/User');
 const loginRouter = require('./routes/user/Login');
 const patientRouter = require('./routes/patient/Patient');
 const sessionRouter = require('./routes/session/Session');
+const tokenRouter = require('./routes/user/Token');
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +26,7 @@ app.use('/user', userRouter);
 app.use('/login', loginRouter);
 app.use('/patient', patientRouter);
 app.use('/session', sessionRouter);
+app.use('/token', tokenRouter);
 
 // Connection with db
 sequelize

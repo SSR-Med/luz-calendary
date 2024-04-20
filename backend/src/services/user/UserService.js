@@ -72,7 +72,7 @@ async function login(name, password) {
   }
   const id = user.id;
   if (user && comparePassword(password, user.password)) {
-    const token = jwt.sign({ id }, jwt_key, { expiresIn: "24h" });
+    const token = jwt.sign({ id }, jwt_key, { expiresIn: "1h" });
     return token;
   } else {
     return null;
