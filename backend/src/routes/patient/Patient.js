@@ -70,7 +70,7 @@ router.post('/',verifyToken,checkRequiredParams(patientParams,"body"), async (re
         if (searchPatient) {
             return res.status(409).json({ message: 'Patient already exists' });
         }
-        const patient = await createPatient(req.id, req.body.name, req.body.cellphone, req.body.document, id_user)
+        await createPatient(req.id, req.body.name, req.body.cellphone, req.body.document, id_user)
         return res.status(201).json({ message: 'Patient created successfully' });
     }
     catch (error) {
