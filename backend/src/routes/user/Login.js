@@ -1,7 +1,5 @@
 // Dependencies
 const express = require('express')
-// Modules
-const {sequelize} = require('../../config/Database')
 // Services
 const { login } = require('../../services/user/UserService')
 // Helpers

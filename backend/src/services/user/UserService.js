@@ -15,9 +15,8 @@ const emailRegex = /^[A-Z0-9]+@[A-Z0-9.-]+\.com$/i;
 
 // Get all users
 async function getUsers() {
-  const users = await User.findAll({
-    attributes: {'exclude': ['contrasena']},
-  });
+  const users = await User.findAll();
+  users.forEach(user => user.dataValues.password = '')
   return users;
 }
 // Delete user
@@ -59,7 +58,7 @@ async function modifyUser(id,newName,newEmail,newPassword,newRole) {
   user.update({
     name : newName,
     email : newEmail,
-    password : generatePassword(newPassword),
+    password : newPassword !== ''? generatePassword(newPassword) : user.password,
     role : newRole
   });
   return user;

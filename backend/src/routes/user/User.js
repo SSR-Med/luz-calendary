@@ -29,6 +29,9 @@ router.get('/', verifyToken, checkAdmin, async (req, res) => {
 // Delete /user : Delete a user (Only admin)
 router.delete('/id/:id', verifyToken, checkAdmin, async (req, res) => {
     try{
+        if (req.params.id == req.id){
+            return res.status(403).json({ message: 'You can not delete yourself' });
+        }
         const user = await deleteUser(req.params.id)
         if (user) {
             return res.status(200).json({ message: 'User deleted successfully' });
@@ -42,6 +45,9 @@ router.delete('/id/:id', verifyToken, checkAdmin, async (req, res) => {
 // Put /user : Modify a user (Only admin)
 router.put('/id/:id', verifyToken, checkAdmin,checkRequiredParams(userCompleteParams,"body"), async (req, res) => {
     try{
+        if (req.params.id == req.id && req.body.role == false){
+            return res.status(403).json({ message: 'You can not modify yourself' });
+        }
         const user = await modifyUser(req.params.id,req.body.name,req.body.email,req.body.password,req.body.role)
         if (user) {
             return res.status(200).json({ message: 'User updated successfully' });
