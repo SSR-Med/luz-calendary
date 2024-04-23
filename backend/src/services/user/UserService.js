@@ -63,6 +63,21 @@ async function modifyUser(id,newName,newEmail,newPassword,newRole) {
   });
   return user;
 }
+// Change user password
+async function changePassword(id, oldPassword, newPassword) {
+  const searchUser = await User.findOne({where: {id: id}});
+  if (!searchUser) {
+    return null;
+  }
+  if(!comparePassword(oldPassword, searchUser.password)){
+    return false;
+  }
+
+  searchUser.update({
+    password: generatePassword(newPassword)
+  });
+  return searchUser;
+}
 // User Login
 async function login(name, password) {
   const user = await User.findOne({where: {name: name}});
@@ -172,6 +187,7 @@ module.exports = {
     deleteUser,
     createUser,
     modifyUser,
+    changePassword,
     login,
     sendLink,
     sendEmailPasswordRecovery,

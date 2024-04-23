@@ -1,7 +1,7 @@
 // Dependencies
 const express = require('express')
 // Services
-const { getUsers,deleteUser,createUser,modifyUser, sendLink, sendEmailPasswordRecovery, recoverPassword, encryptUserData,
+const { getUsers,deleteUser,createUser,modifyUser,changePassword, sendLink, sendEmailPasswordRecovery, recoverPassword, encryptUserData,
     createLinkUserCreation,decryptUserData, sendEmailCreateAccount } = require('../../services/user/UserService')
 // Modules
 const {sequelize} = require('../../config/Database')
@@ -138,6 +138,36 @@ router.post('/password_recovery/:id/:token', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
+        res.status(500).json({message: 'Internal server error'})
+    }
+})
+
+// Patch /user : Change password
+router.patch('/', verifyToken,checkRequiredParams(["oldPassword","newPassword"],"body") ,async (req,res) =>{
+    try{
+        const response = await changePassword(req.id,req.body.oldPassword,req.body.newPassword)
+        if (response) {
+            return res.status(200).json({ message: 'Password updated successfully' });
+        }
+        else if (response === false){
+            return res.status(401).json({ message: 'Incorrect password' });
+        }
+        return res.status(404).json({ message: 'User not found' });
+    }
+    catch (error) {
+        res.status(500).json({message: 'Internal server error'})
+    }
+})
+
+// Delete /user : Delete user
+router.delete("/",verifyToken, async (req,res) =>{
+    try{
+        const response = deleteUser(req.id)
+        if (response) {
+            return res.status(200).json({ message: 'User deleted successfully' });
+        }
+        return res.status(404).json({ message: 'User not found' });
+    }catch(error){
         res.status(500).json({message: 'Internal server error'})
     }
 })
